@@ -5,10 +5,13 @@ import {
   IsStrongPassword,
 } from 'class-validator';
 import { IsSame } from 'src/common/validator/is_same.validator';
+import { IsEmailUnique } from 'src/common/validator/is_email_unique.validator';
+import { IsPhoneUnique } from 'src/common/validator/is_phone_unique.validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail()
+  @IsEmailUnique()
   email: string;
 
   @IsNotEmpty()
@@ -21,6 +24,7 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsPhoneUnique()
   phone: string;
 
   @IsNotEmpty()

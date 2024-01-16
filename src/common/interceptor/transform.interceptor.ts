@@ -16,6 +16,8 @@ type TransformInterceptorResponse<T> = {
 export class TransformInterceptor<T>
   implements NestInterceptor<T, TransformInterceptorResponse<T>>
 {
+  constructor(private type?: NonNullable<'query' | 'body' | 'param'>) {}
+
   intercept(
     context: ExecutionContext,
     next: CallHandler,

@@ -11,23 +11,40 @@ export class UserService {
     private userModel: typeof User,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    return await this.userModel.create({ ...createUserDto });
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    return await this.userModel.scope('profile').create({ ...createUserDto });
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.scope('withoutPassword').findAll();
+    return await this.userModel.scope('profile').findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<User> {
+    return await this.userModel.scope('profile').findOne({
+      where: {
+        id,
+      },
+    });
   }
 
+  async findByEmail(email: string): Promise<User> {
+    return await this.userModel.scope('profile').findOne({
+      where: {
+        email,
+      },
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number): Promise<void> {
+    await this.userModel.scope('profile').destroy({
+      where: {
+        id,
+      },
+    });
   }
 }

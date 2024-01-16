@@ -9,11 +9,13 @@ import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import helmet from 'helmet';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
-import { config } from './common/config/configuration';
-import { ValidationError } from 'class-validator';
+import { ValidationError, useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // wrap AppModule with UseContainer
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   // app transformer
   app.useGlobalInterceptors(new TransformInterceptor());
@@ -107,6 +109,6 @@ async function bootstrap() {
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   });
 
-  await app.listen(config.app.port);
+  await app.listen(Number(process.env.PORT) || 8800);
 }
 bootstrap();
