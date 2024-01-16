@@ -3,15 +3,19 @@ import { AppController } from './app.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER } from '@nestjs/core';
 import { MainExceptionsFilter } from './common/filters/exception.interceptor';
-import { JOIPIPE_OPTIONS, JoiPipe, JoiPipeModule } from 'nestjs-joi';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './user/entities/user.entity';
+import configuration from './common/config/configuration';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      load: [configuration],
+      isGlobal: true,
+      cache: true,
+    }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
       host: process.env.DATABASE_HOST,
@@ -22,27 +26,17 @@ import { User } from './user/entities/user.entity';
       models: [User],
       autoLoadModels: true,
       synchronize: true,
+      logging: false,
       sync: { force: true },
     }),
     UserModule,
     AuthModule,
-    JoiPipeModule,
   ],
   controllers: [AppController],
   providers: [
     {
       provide: APP_FILTER,
       useClass: MainExceptionsFilter,
-    },
-    {
-      provide: APP_PIPE,
-      useClass: JoiPipe,
-    },
-    {
-      provide: JOIPIPE_OPTIONS,
-      useValue: {
-        usePipeValidationException: true,
-      },
     },
   ],
 })

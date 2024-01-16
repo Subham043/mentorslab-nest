@@ -1,16 +1,39 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { VersioningType } from '@nestjs/common';
+import {
+  BadRequestException,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import helmet from 'helmet';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
+import { config } from './common/config/configuration';
+import { ValidationError } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // app transformer
   app.useGlobalInterceptors(new TransformInterceptor());
+
+  // app validations
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+        const result = {};
+        validationErrors.forEach(
+          (element) =>
+            (result[element.property] = Object.values(element.constraints)),
+        );
+
+        throw new BadRequestException({ ...result });
+      },
+      whitelist: true,
+      transform: true,
+    }),
+  );
 
   // app versioning
   app.enableVersioning({
@@ -84,6 +107,6 @@ async function bootstrap() {
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   });
 
-  await app.listen(process.env.PORT || 8800);
+  await app.listen(config.app.port);
 }
 bootstrap();

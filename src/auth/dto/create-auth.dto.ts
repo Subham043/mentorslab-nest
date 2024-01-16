@@ -1,13 +1,11 @@
-import { JoiSchema, JoiSchemaOptions } from 'nestjs-joi';
-import * as Joi from 'joi';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
-@JoiSchemaOptions({
-  allowUnknown: false,
-})
 export class CreateAuthDto {
-  @JoiSchema(Joi.string().email().required())
-  email!: string;
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 
-  @JoiSchema(Joi.string().required())
+  @IsNotEmpty()
+  @IsString()
   password!: string;
 }

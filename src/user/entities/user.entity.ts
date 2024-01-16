@@ -10,7 +10,6 @@ import {
   Table,
   Unique,
 } from 'sequelize-typescript';
-import * as bcrypt from 'bcrypt';
 import sequelize from 'sequelize';
 
 @Scopes(() => ({
@@ -59,16 +58,7 @@ export class User extends Model {
   otp: number;
 
   @Column
-  get password(): string {
-    return this.getDataValue('password');
-  }
-
-  set password(value: string) {
-    this.setDataValue(
-      'password',
-      bcrypt.hash(value, Number(process.env.saltOrRounds)),
-    );
-  }
+  password: string;
 
   @Column({
     type: DataType.TEXT,

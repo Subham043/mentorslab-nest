@@ -11,12 +11,12 @@ export class UserService {
     private userModel: typeof User,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    return await this.userModel.create({ ...createUserDto });
   }
 
-  findAll(): Promise<User[]> {
-    return this.userModel.scope('withoutPassword').findAll();
+  async findAll(): Promise<User[]> {
+    return await this.userModel.scope('withoutPassword').findAll();
   }
 
   findOne(id: number) {

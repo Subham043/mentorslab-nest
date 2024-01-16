@@ -4,9 +4,9 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { JoiPipeValidationException } from 'nestjs-joi';
 
 @Catch()
 export class MainExceptionsFilter implements ExceptionFilter {
@@ -22,30 +22,25 @@ export class MainExceptionsFilter implements ExceptionFilter {
     const httpStatus =
       exception instanceof HttpException
         ? exception.getStatus()
-        : exception instanceof JoiPipeValidationException
-          ? HttpStatus.BAD_REQUEST
-          : HttpStatus.INTERNAL_SERVER_ERROR;
+        : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const httpMessage =
       exception instanceof HttpException
         ? exception.message
-        : exception instanceof JoiPipeValidationException
-          ? exception.message
-          : 'Internal Server Error';
+        : 'Internal Server Error';
 
-    const joiValidationErroBody =
-      exception instanceof JoiPipeValidationException
+    const ValidationErroBody =
+      exception instanceof BadRequestException
         ? {
-            error: exception.joiValidationError.details.map((item) => {
-              return { message: item.message, context: item.context };
-            }),
+            error: exception.getResponse(),
           }
         : {};
+
     const responseBody = {
       statusCode: httpStatus,
       timestamp: new Date().toISOString(),
       message: httpMessage,
-      ...joiValidationErroBody,
+      ...ValidationErroBody,
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
     };
 
