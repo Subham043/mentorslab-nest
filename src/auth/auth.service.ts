@@ -13,12 +13,14 @@ import { User } from 'src/user/entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
 import { ConfigService } from '@nestjs/config';
 import { ConfigVariablesType } from 'src/common/config/configuration';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService<ConfigVariablesType>,
+    private readonly mailService: MailService,
     @InjectModel(User)
     private userModel: typeof User,
   ) {}
@@ -79,6 +81,10 @@ export class AuthService {
   async register(dto: RegisterDto): Promise<User> {
     const user = await this.userModel.create({
       ...dto,
+    });
+    await this.mailService.sendEmailVerification({
+      name: user.name,
+      email: user.email,
     });
     return user;
   }

@@ -10,6 +10,7 @@ import { IsSameRule } from 'src/common/validator/is_same.validator';
 import { IsEmailUniqueRule } from 'src/common/validator/is_email_unique.validator';
 import { ConfigService } from '@nestjs/config';
 import { ConfigVariablesType } from 'src/common/config/configuration';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ConfigVariablesType } from 'src/common/config/configuration';
       inject: [ConfigService],
     }),
     SequelizeModule.forFeature([User]),
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, IsEmailUniqueRule, IsSameRule, IsPhoneUniqueRule],

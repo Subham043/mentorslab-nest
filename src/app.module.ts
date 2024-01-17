@@ -15,7 +15,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottleGuard } from './common/guards/throttle.guard';
 import { AccessTokenStrategy } from './auth/strategy/access_token.strategy';
 import { RefreshTokenStrategy } from './auth/strategy/refresh_token.strategy';
-
+import { MailModule } from './mail/mail.module';
+import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,8 +48,19 @@ import { RefreshTokenStrategy } from './auth/strategy/refresh_token.strategy';
       }),
       inject: [ConfigService],
     }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService<ConfigVariablesType>) => ({
+        redis: {
+          host: configService.get('redis.host', { infer: true }),
+          port: configService.get('redis.port', { infer: true }),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     UserModule,
     AuthModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [

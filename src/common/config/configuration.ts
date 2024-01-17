@@ -3,6 +3,7 @@ export interface ConfigVariablesType {
     name: string;
     port: number;
     client_url: string;
+    app_url: string;
   };
   email: {
     admin: string;
@@ -11,6 +12,11 @@ export interface ConfigVariablesType {
     host: string;
     name: string;
     username: string;
+    password: string;
+    port: number;
+  };
+  redis: {
+    host: string;
     password: string;
     port: number;
   };
@@ -51,6 +57,7 @@ export default () => ({
     name: process.env.APP_NAME || 'Nest App',
     port: parseInt(process.env.PORT, 10) || 8800,
     client_url: process.env.CLIENT_URL,
+    app_url: process.env.APP_URL,
   },
   email: {
     admin: process.env.ADMIN_EMAIL,
@@ -61,6 +68,11 @@ export default () => ({
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
     port: parseInt(process.env.DATABASE_PORT, 10) || 3306,
+  },
+  redis: {
+    host: process.env.REDIS_HOST,
+    password: process.env.REDIS_PASSWORD,
+    port: parseInt(process.env.REDIS_PORT, 10) || 3306,
   },
   mail: {
     host: process.env.MAIL_HOST,
