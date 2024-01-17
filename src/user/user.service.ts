@@ -12,15 +12,15 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    return await this.userModel.scope('profile').create({ ...createUserDto });
+    return await this.userModel.create({ ...createUserDto });
   }
 
   async findAll(): Promise<User[]> {
-    return await this.userModel.scope('profile').findAll();
+    return await this.userModel.findAll();
   }
 
   async findOne(id: number): Promise<User> {
-    return await this.userModel.scope('profile').findOne({
+    return await this.userModel.findOne({
       where: {
         id,
       },
@@ -28,7 +28,7 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<User> {
-    return await this.userModel.scope('profile').findOne({
+    return await this.userModel.findOne({
       where: {
         email,
       },
@@ -41,7 +41,7 @@ export class UserService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.userModel.scope('profile').destroy({
+    await this.userModel.destroy({
       where: {
         id,
       },

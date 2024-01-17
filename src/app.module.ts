@@ -5,16 +5,21 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { MainExceptionsFilter } from './common/filters/exception.interceptor';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './user/entities/user.entity';
-import configuration from './common/config/configuration';
+import configuration, {
+  ConfigVariablesType,
+} from './common/config/configuration';
 import { RolesGuard } from './common/guards/roles.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottleGuard } from './common/guards/throttle.guard';
+import { AccessTokenStrategy } from './auth/strategy/access_token.strategy';
+import { RefreshTokenStrategy } from './auth/strategy/refresh_token.strategy';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      envFilePath: '.env',
       load: [configuration],
       isGlobal: true,
       cache: true,
@@ -25,18 +30,22 @@ import { ThrottleGuard } from './common/guards/throttle.guard';
         limit: 200,
       },
     ]),
-    SequelizeModule.forRoot({
-      dialect: 'mysql',
-      host: process.env.DATABASE_HOST,
-      port: Number(process.env.DATABASE_PORT),
-      username: process.env.DATABASE_USERNAME,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-      models: [User],
-      autoLoadModels: true,
-      synchronize: true,
-      logging: false,
-      sync: { force: true },
+    SequelizeModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService<ConfigVariablesType>) => ({
+        dialect: 'mysql',
+        host: configService.get('database.host', { infer: true }),
+        port: configService.get('database.port', { infer: true }),
+        username: configService.get('database.username', { infer: true }),
+        password: configService.get('database.password', { infer: true }),
+        database: configService.get('database.name', { infer: true }),
+        models: [User],
+        autoLoadModels: true,
+        synchronize: true,
+        logging: false,
+        sync: { force: false },
+      }),
+      inject: [ConfigService],
     }),
     UserModule,
     AuthModule,
@@ -55,6 +64,8 @@ import { ThrottleGuard } from './common/guards/throttle.guard';
       provide: APP_GUARD,
       useClass: ThrottleGuard,
     },
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
   ],
   exports: [ThrottlerModule],
 })

@@ -1,21 +1,26 @@
 import {
+  AfterCreate,
+  AfterUpdate,
   AllowNull,
   AutoIncrement,
+  BeforeCreate,
+  BeforeUpdate,
   Column,
+  CreatedAt,
   DataType,
   Default,
+  DefaultScope,
+  Index,
   Model,
   PrimaryKey,
-  Scopes,
   Table,
   Unique,
+  UpdatedAt,
 } from 'sequelize-typescript';
-import sequelize from 'sequelize';
+import * as bcrypt from 'bcrypt';
 
-@Scopes(() => ({
-  withoutPassword: {
-    attributes: { exclude: ['password'] },
-  },
+@DefaultScope(() => ({
+  attributes: { exclude: ['password', 'otp', 'hashed_refresh_token'] },
 }))
 @Table({
   modelName: 'users',
@@ -24,6 +29,7 @@ import sequelize from 'sequelize';
 export class User extends Model {
   @PrimaryKey
   @AutoIncrement
+  @Index
   @Column
   id: number;
 
@@ -43,12 +49,14 @@ export class User extends Model {
   }
 
   @Unique
+  @Index
   @Column
   email: string;
 
   @Unique
   @Default(null)
   @AllowNull
+  @Index
   @Column
   phone: string;
 
@@ -78,16 +86,10 @@ export class User extends Model {
   @Column({ defaultValue: true })
   isActive: boolean;
 
-  @Column({
-    type: 'TIMESTAMP',
-    defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-  })
+  @CreatedAt
   createdAt: Date;
 
-  @Column({
-    type: 'TIMESTAMP',
-    defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-  })
+  @UpdatedAt
   updatedAt: Date;
 
   @Column({
@@ -96,4 +98,31 @@ export class User extends Model {
     defaultValue: null,
   })
   verifiedAt: Date;
+
+  @BeforeCreate
+  static async beforeCreation(user: User) {
+    // this will also be called when an user is created
+    user.password = await bcrypt.hash(
+      user.password,
+      Number(process.env.saltOrRounds),
+    );
+    user.otp = Math.floor(1000 + Math.random() * 9000);
+    user.createdAt = new Date();
+    user.updatedAt = new Date();
+  }
+  @BeforeUpdate
+  static async beforeUpdation(user: User) {
+    // this will also be called when an user is updated
+    user.otp = Math.floor(1000 + Math.random() * 9000);
+    user.updatedAt = new Date();
+  }
+
+  @AfterCreate
+  @AfterUpdate
+  static async afterMutation(user: User) {
+    // this will also be called after an user is created or updated
+    delete user.dataValues.password;
+    delete user.dataValues.otp;
+    delete user.dataValues.hashed_refresh_token;
+  }
 }

@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from '../dto/jwt_payload.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'src/user/entities/user.entity';
+import { Request } from 'express';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -12,14 +13,20 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     private userModel: typeof User,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: true,
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: Request) =>
+          request.cookies[process.env.APP_NAME + '_access_token']
+            ?.replace('Bearer', '')
+            .trim() ||
+          request.get('Authorization')?.replace('Bearer', '').trim(),
+      ]),
       secretOrKey: process.env.JWT_SECRET_KEY || 'secretKey',
+      ignoreExpiration: false,
     });
   }
 
-  validate(payload: JwtPayload) {
-    const result = this.userModel.findOne({
+  async validate(payload: JwtPayload): Promise<JwtPayload> {
+    const result = await this.userModel.findOne({
       where: {
         id: payload.id,
       },
