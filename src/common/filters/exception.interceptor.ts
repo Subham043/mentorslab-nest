@@ -16,7 +16,7 @@ export class MainExceptionsFilter implements ExceptionFilter {
     // In certain situations `httpAdapter` might not be available in the
     // constructor method, thus we should resolve it here.
     const { httpAdapter } = this.httpAdapterHost;
-
+    console.log(exception);
     const ctx = host.switchToHttp();
 
     const httpStatus =
