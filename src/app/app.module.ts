@@ -1,21 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
+import { AppController } from './controller/app.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
+import { UserModule } from '../user/user.module';
+import { AuthModule } from '../auth/auth.module';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { MainExceptionsFilter } from './common/filters/exception.interceptor';
+import { MainExceptionsFilter } from '../common/filters/exception.interceptor';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { User } from './user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import configuration, {
   ConfigVariablesType,
-} from './common/config/configuration';
-import { RolesGuard } from './common/guards/roles.guard';
+} from '../common/config/configuration';
+import { RolesGuard } from '../common/guards/roles.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { ThrottleGuard } from './common/guards/throttle.guard';
-import { AccessTokenStrategy } from './auth/strategy/access_token.strategy';
-import { RefreshTokenStrategy } from './auth/strategy/refresh_token.strategy';
-import { MailModule } from './mail/mail.module';
+import { ThrottleGuard } from '../common/guards/throttle.guard';
+import { AccessTokenStrategy } from '../auth/strategy/access_token.strategy';
+import { RefreshTokenStrategy } from '../auth/strategy/refresh_token.strategy';
+import { MailModule } from '../mail/mail.module';
 import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [

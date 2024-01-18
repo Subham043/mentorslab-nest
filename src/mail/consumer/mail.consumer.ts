@@ -3,7 +3,7 @@ import { Process, Processor } from '@nestjs/bull';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { ConfigVariablesType } from 'src/common/config/configuration';
-import { EmailVerificationDto } from './dto/email-verification.dto';
+import { EmailVerificationDto } from '../dto/email-verification.dto';
 
 @Processor('mail-queue')
 export class MailConsumer {

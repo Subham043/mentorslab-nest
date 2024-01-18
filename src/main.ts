@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './app/app.module';
 import {
   BadRequestException,
   ValidationPipe,
@@ -10,6 +10,7 @@ import * as compression from 'compression';
 import helmet from 'helmet';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
 import { ValidationError, useContainer } from 'class-validator';
+import { RemoveUnsafeHtmlPipe } from './common/pipes/remove_unsafe_html.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -35,6 +36,7 @@ async function bootstrap() {
       whitelist: true,
       transform: true,
     }),
+    new RemoveUnsafeHtmlPipe(),
   );
 
   // app versioning

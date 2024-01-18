@@ -8,9 +8,9 @@ import {
   NotFoundException,
   SetMetadata,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
+import { AuthService } from '../service/auth.service';
+import { LoginDto } from '../dto/login.dto';
+import { RegisterDto } from '../dto/register.dto';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Throttle } from '@nestjs/throttler';
 import { Response } from 'express';
@@ -20,7 +20,7 @@ import { AccessTokenGuard } from 'src/common/guards/access_token.guard';
 import { GetCurrentUserId } from 'src/common/decorators/get_current_user_id.decorator';
 import { RefreshTokenGuard } from 'src/common/guards/refresh_token.guard';
 import { GetCurrentUserIdAndRefreshToken } from 'src/common/decorators/get_current_user_id_with_refresh_token.decorator';
-import { JwtRefreshPayload } from './dto/jwt_refresh_payload.dto';
+import { JwtRefreshPayload } from '../dto/jwt_refresh_payload.dto';
 
 @Controller({
   path: 'auth',

@@ -4,9 +4,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { BullModule } from '@nestjs/bull';
-import { MailConsumer } from './mail.consumer';
-import { MailProducer } from './mail.producer';
-// import { MailProducer } from './mail.producer';
+import { MailConsumer } from './consumer/mail.consumer';
+import { MailProducer } from './producer/mail.producer';
 
 @Module({
   imports: [

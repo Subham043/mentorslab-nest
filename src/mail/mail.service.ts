@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EmailVerificationDto } from './dto/email-verification.dto';
-import { MailProducer } from './mail.producer';
+import { MailProducer } from './producer/mail.producer';
 
 @Injectable()
 export class MailService {

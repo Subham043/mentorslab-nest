@@ -1,4 +1,4 @@
-import { EmailVerificationDto } from './dto/email-verification.dto';
+import { EmailVerificationDto } from '../dto/email-verification.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 

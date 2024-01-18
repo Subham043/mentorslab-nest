@@ -4,13 +4,13 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Token } from './dto/token.dto';
-import { JwtPayload } from './dto/jwt_payload.dto';
+import { Token } from '../dto/token.dto';
+import { JwtPayload } from '../dto/jwt_payload.dto';
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto } from '../dto/login.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from 'src/user/entities/user.entity';
-import { RegisterDto } from './dto/register.dto';
+import { RegisterDto } from '../dto/register.dto';
 import { ConfigService } from '@nestjs/config';
 import { ConfigVariablesType } from 'src/common/config/configuration';
 import { MailService } from 'src/mail/mail.service';
