@@ -17,6 +17,10 @@ import { AccessTokenStrategy } from '../auth/strategy/access_token.strategy';
 import { RefreshTokenStrategy } from '../auth/strategy/refresh_token.strategy';
 import { MailModule } from '../mail/mail.module';
 import { BullModule } from '@nestjs/bull';
+import { Subscription } from 'src/subscription/entities/subscription.entity';
+import { SubscriptionModule } from 'src/subscription/subscription.module';
+import { Payment } from 'src/payment/entities/payment.entity';
+import { PaymentModule } from 'src/payment/payment.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -40,11 +44,11 @@ import { BullModule } from '@nestjs/bull';
         username: configService.get('database.username', { infer: true }),
         password: configService.get('database.password', { infer: true }),
         database: configService.get('database.name', { infer: true }),
-        models: [User],
+        models: [User, Subscription, Payment],
         autoLoadModels: true,
         synchronize: true,
         logging: false,
-        sync: { force: false },
+        sync: { force: true },
       }),
       inject: [ConfigService],
     }),
@@ -61,6 +65,8 @@ import { BullModule } from '@nestjs/bull';
     UserModule,
     AuthModule,
     MailModule,
+    SubscriptionModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [
