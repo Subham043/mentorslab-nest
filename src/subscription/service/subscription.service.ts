@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Subscription } from '../entities/subscription.entity';
 import { RazorpayHook } from 'src/common/hooks/razorpay.hook';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { FileHook } from 'src/common/hooks/file.hook';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { SubscriptionCreatedEvent } from '../dto/subscription-created.dto';
+import { VerifySubscriptionPaymentDto } from '../dto/verify-payment.dto';
 
 @Injectable()
 export class SubscriptionService {
@@ -15,6 +18,7 @@ export class SubscriptionService {
     private paymentModel: typeof Payment,
     private razorpayHook: RazorpayHook,
     private fileHook: FileHook,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async create(
@@ -49,7 +53,12 @@ export class SubscriptionService {
       order_id: order.id,
       subscription_id: subscription.id,
     });
-    return await this.findOne(subscription.id);
+    const data = await this.findOne(subscription.id);
+    this.eventEmitter.emit(
+      'subscription.created',
+      new SubscriptionCreatedEvent(data),
+    );
+    return data;
   }
 
   async findAll(): Promise<Subscription[]> {
@@ -86,5 +95,34 @@ export class SubscriptionService {
         id,
       },
     });
+  }
+
+  async verify(verifySubscriptionPaymentDto: VerifySubscriptionPaymentDto) {
+    const isVerified = this.razorpayHook.verifyPayment(
+      verifySubscriptionPaymentDto.order_id,
+      verifySubscriptionPaymentDto.payment_id,
+      verifySubscriptionPaymentDto.payment_signature,
+    );
+    if (isVerified) {
+      await this.subscriptionModel.update(
+        {
+          current_payment: {
+            payment_id: verifySubscriptionPaymentDto.payment_id,
+            payment_signature: verifySubscriptionPaymentDto.payment_signature,
+            status: 'PAYMENT_SUCCESS',
+          },
+        },
+        {
+          where: { id: verifySubscriptionPaymentDto.id },
+        },
+      );
+      const subscription = await this.findOne(verifySubscriptionPaymentDto.id);
+      this.eventEmitter.emit(
+        'subscription.created',
+        new SubscriptionCreatedEvent(subscription),
+      );
+      return subscription;
+    }
+    throw new BadRequestException('Payment verification failed');
   }
 }

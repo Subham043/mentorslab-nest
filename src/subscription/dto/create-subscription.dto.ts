@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsEmail, IsOptional } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsEmail,
+  IsOptional,
+  IsAlphanumeric,
+} from 'class-validator';
 import {
   HasExtension,
   IsFile,
@@ -13,10 +19,12 @@ export class CreateSubscriptionDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsAlphanumeric()
   firstName: string;
 
   @IsNotEmpty()
   @IsString()
+  @IsAlphanumeric()
   lastName: string;
 
   @IsNotEmpty()
@@ -27,7 +35,7 @@ export class CreateSubscriptionDto {
   @IsString()
   message: string;
 
-  // @IsNotEmpty()
+  @IsNotEmpty()
   @IsFile()
   @MaxFileSize(5e6)
   @HasExtension(['pdf'])

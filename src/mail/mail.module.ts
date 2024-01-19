@@ -6,6 +6,10 @@ import { join } from 'path';
 import { BullModule } from '@nestjs/bull';
 import { MailConsumer } from './consumer/mail.consumer';
 import { MailProducer } from './producer/mail.producer';
+import { Subscription } from 'src/subscription/entities/subscription.entity';
+import { SequelizeModule } from '@nestjs/sequelize';
+import { SubscriptionMailConsumer } from './consumer/subscription_mail.consumer';
+import { SubscriptionMailProducer } from './producer/subscription_mail.producer';
 
 @Module({
   imports: [
@@ -35,11 +39,23 @@ import { MailProducer } from './producer/mail.producer';
         },
       },
     }),
-    BullModule.registerQueueAsync({
-      name: 'mail-queue',
-    }),
+    BullModule.registerQueueAsync(
+      {
+        name: 'mail-queue',
+      },
+      {
+        name: 'subscription-mail-queue',
+      },
+    ),
+    SequelizeModule.forFeature([Subscription]),
   ],
-  providers: [MailService, MailProducer, MailConsumer],
+  providers: [
+    MailService,
+    MailProducer,
+    MailConsumer,
+    SubscriptionMailConsumer,
+    SubscriptionMailProducer,
+  ],
   exports: [MailService],
 })
 export class MailModule {}

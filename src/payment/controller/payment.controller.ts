@@ -1,6 +1,9 @@
-import { Controller, Get, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Delete, UseGuards } from '@nestjs/common';
 import { PaymentService } from '../service/payment.service';
-
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { AccessTokenGuard } from 'src/common/guards/access_token.guard';
+@UseGuards(AccessTokenGuard)
+@Roles('ADMIN')
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}

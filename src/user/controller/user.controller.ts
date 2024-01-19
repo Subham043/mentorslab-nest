@@ -7,11 +7,15 @@ import {
   Param,
   Delete,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { AccessTokenGuard } from 'src/common/guards/access_token.guard';
+@UseGuards(AccessTokenGuard)
+@Roles('ADMIN')
 @Controller({
   path: 'user',
   version: '1',

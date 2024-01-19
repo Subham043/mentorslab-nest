@@ -22,6 +22,7 @@ import { SubscriptionModule } from 'src/subscription/subscription.module';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { PaymentModule } from 'src/payment/payment.module';
 import { MemoryStoredFile, NestjsFormDataModule } from 'nestjs-form-data';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -70,6 +71,7 @@ import { MemoryStoredFile, NestjsFormDataModule } from 'nestjs-form-data';
       }),
       inject: [ConfigService],
     }),
+    EventEmitterModule.forRoot(),
     UserModule,
     AuthModule,
     MailModule,

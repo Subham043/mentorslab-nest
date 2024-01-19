@@ -1,4 +1,5 @@
 import {
+  IsAlphanumeric,
   IsEmail,
   IsNotEmpty,
   IsString,
@@ -16,10 +17,12 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsString()
+  @IsAlphanumeric()
   firstName: string;
 
   @IsNotEmpty()
   @IsString()
+  @IsAlphanumeric()
   lastName: string;
 
   @IsNotEmpty()
