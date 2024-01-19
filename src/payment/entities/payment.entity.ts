@@ -30,6 +30,9 @@ export class Payment extends Model {
   @Column
   id: number;
 
+  @Column
+  amount: string;
+
   @Unique
   @Index
   @Column({
