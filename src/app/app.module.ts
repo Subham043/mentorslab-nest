@@ -21,6 +21,7 @@ import { Subscription } from 'src/subscription/entities/subscription.entity';
 import { SubscriptionModule } from 'src/subscription/subscription.module';
 import { Payment } from 'src/payment/entities/payment.entity';
 import { PaymentModule } from 'src/payment/payment.module';
+import { MemoryStoredFile, NestjsFormDataModule } from 'nestjs-form-data';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -62,6 +63,13 @@ import { PaymentModule } from 'src/payment/payment.module';
       }),
       inject: [ConfigService],
     }),
+    NestjsFormDataModule.configAsync({
+      imports: [ConfigModule],
+      useFactory: async () => ({
+        storage: MemoryStoredFile,
+      }),
+      inject: [ConfigService],
+    }),
     UserModule,
     AuthModule,
     MailModule,
@@ -85,6 +93,6 @@ import { PaymentModule } from 'src/payment/payment.module';
     AccessTokenStrategy,
     RefreshTokenStrategy,
   ],
-  exports: [ThrottlerModule],
+  exports: [ThrottlerModule, NestjsFormDataModule],
 })
 export class AppModule {}

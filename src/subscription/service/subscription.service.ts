@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Subscription } from '../entities/subscription.entity';
 import { RazorpayHook } from 'src/common/hooks/razorpay.hook';
 import { Payment } from 'src/payment/entities/payment.entity';
+import { FileHook } from 'src/common/hooks/file.hook';
 
 @Injectable()
 export class SubscriptionService {
@@ -13,6 +14,7 @@ export class SubscriptionService {
     @InjectModel(Payment)
     private paymentModel: typeof Payment,
     private razorpayHook: RazorpayHook,
+    private fileHook: FileHook,
   ) {}
 
   async create(
@@ -30,8 +32,13 @@ export class SubscriptionService {
     if (subscriptionByPhone) {
       return subscriptionByPhone;
     }
+    const savedFileName = await this.fileHook.saveFile(
+      createSubscriptionDto.cv,
+      'cv/',
+    );
     const subscription = await this.subscriptionModel.create({
       ...createSubscriptionDto,
+      cv: savedFileName,
     });
     const order = await this.razorpayHook.generateOrderId(
       500,

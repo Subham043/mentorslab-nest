@@ -5,10 +5,15 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Subscription } from './entities/subscription.entity';
 import { RazorpayHook } from 'src/common/hooks/razorpay.hook';
 import { Payment } from 'src/payment/entities/payment.entity';
+import { NestjsFormDataModule } from 'nestjs-form-data';
+import { FileHook } from 'src/common/hooks/file.hook';
 
 @Module({
   controllers: [SubscriptionController],
-  providers: [SubscriptionService, RazorpayHook],
-  imports: [SequelizeModule.forFeature([Subscription, Payment])],
+  providers: [SubscriptionService, RazorpayHook, FileHook],
+  imports: [
+    SequelizeModule.forFeature([Subscription, Payment]),
+    NestjsFormDataModule,
+  ],
 })
 export class SubscriptionModule {}

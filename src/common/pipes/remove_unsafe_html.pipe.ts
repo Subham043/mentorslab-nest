@@ -1,12 +1,17 @@
 import { PipeTransform, Injectable } from '@nestjs/common';
+import { MemoryStoredFile } from 'nestjs-form-data';
 import * as sanitizeHtml from 'sanitize-html';
 
 @Injectable()
 export class RemoveUnsafeHtmlPipe implements PipeTransform {
-  async transform(value: object) {
+  async transform(value: any) {
     const data = value;
     (Object.keys(value) as (keyof typeof value)[]).forEach(async (key) => {
-      data[key] = this.sanitize(value[key]) as never;
+      if (value[key] instanceof MemoryStoredFile) {
+        data[key] = value[key];
+      } else {
+        data[key] = this.sanitize(value[key]);
+      }
     });
     return data;
   }

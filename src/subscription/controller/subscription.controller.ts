@@ -2,7 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { SubscriptionService } from '../service/subscription.service';
 import { CreateSubscriptionDto } from '../dto/create-subscription.dto';
 import { Public } from 'src/common/decorators/public.decorator';
-import { Throttle } from '@nestjs/throttler';
+import { FormDataRequest } from 'nestjs-form-data';
 
 @Controller({
   path: 'subscription',
@@ -11,9 +11,9 @@ import { Throttle } from '@nestjs/throttler';
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
-  @Post()
   @Public()
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Post()
+  @FormDataRequest()
   create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
     return this.subscriptionService.create(createSubscriptionDto);
   }

@@ -3,6 +3,7 @@
 /node_modules
 /prisma/migrations
 /mysql
+/uploads
 .env
 .env.docker
 docker-compose.yml
